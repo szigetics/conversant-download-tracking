@@ -17,11 +17,13 @@
 //
 
 #import "GSDownloadTracker.h"
-#include <sys/socket.h>
-#include <sys/sysctl.h>
+
+#include <AdSupport/AdSupport.h>
+#include <CommonCrypto/CommonDigest.h>
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <CommonCrypto/CommonDigest.h>
+#include <sys/socket.h>
+#include <sys/sysctl.h>
 
 @implementation GSDownloadTracker
 
@@ -46,29 +48,29 @@
     mgmtInfoBase[4] = NET_RT_IFLIST;  // Request all configured interfaces
     
     // With all configured interfaces requested, get handle index
-    if ((mgmtInfoBase[5] = if_nametoindex("en0")) == 0) 
+    if((mgmtInfoBase[5] = if_nametoindex("en0")) == 0) 
         errorFlag = @"if_nametoindex failure";
     else
     {
         // Get the size of the data available (store in len)
-        if (sysctl(mgmtInfoBase, 6, NULL, &length, NULL, 0) < 0) 
+        if(sysctl(mgmtInfoBase, 6, NULL, &length, NULL, 0) < 0) 
             errorFlag = @"sysctl mgmtInfoBase failure";
         else
         {
             // Alloc memory based on above call
-            if ((msgBuffer = malloc(length)) == NULL)
+            if((msgBuffer = malloc(length)) == NULL)
                 errorFlag = @"buffer allocation failure";
             else
             {
                 // Get system information, store in buffer
-                if (sysctl(mgmtInfoBase, 6, msgBuffer, &length, NULL, 0) < 0)
+                if(sysctl(mgmtInfoBase, 6, msgBuffer, &length, NULL, 0) < 0)
                     errorFlag = @"sysctl msgBuffer failure";
             }
         }
     }
     
     // Before going any further...
-    if (errorFlag != NULL)
+    if(errorFlag != NULL)
     {
         return errorFlag;
     }
@@ -105,15 +107,20 @@
 
 + (void)trackInternalWithAppID:(NSString *)a_appID
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     // first check to see whether we've already informed Greystripe of this download
     NSFileManager * fm = [NSFileManager defaultManager];
     NSString * cachesPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString * filePath = [cachesPath stringByAppendingPathComponent:[NSString stringWithFormat:@"gsDownloadTracked-%@", a_appID]];
     if(![fm fileExistsAtPath:filePath])
     {	
-        NSString * deviceUID = [self hashedMACAddress];
-        NSString * requestURLString = [NSString stringWithFormat:@"http://ads2.greystripe.com/AdBridgeServer/track.htm?hmid=%@&appid=%@&action=dl", deviceUID, a_appID];
+        NSString * hashedMAC = [self hashedMACAddress];
+        NSString * idfa = @"";
+        if([[UIDevice currentDevice] respondsToSelector:@selector(identifierForVendor)] && NSClassFromString(@"ASIdentifierManager"))
+        {
+            idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        }
+        NSString * requestURLString = [NSString stringWithFormat:@"http://ads2.greystripe.com/AdBridgeServer/track.htm?hmid=%@&idfa=%@&appid=%@&action=dl", hashedMAC, idfa, a_appID];
         NSURLRequest * request  = [NSURLRequest requestWithURL:[NSURL URLWithString:requestURLString]];
         NSHTTPURLResponse * response = nil;
         NSError * errors = nil;
