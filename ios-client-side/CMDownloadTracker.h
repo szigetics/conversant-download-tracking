@@ -1,7 +1,7 @@
 //
-//  GSDownloadTracker.h
+//  CMDownloadTracker.h
 //
-//  Copyright 2013 Greystripe
+//  Copyright 2014 Conversant, Inc.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface GSDownloadTracker : NSObject
+@interface CMDownloadTracker : NSObject
 
 /**
- * Track the download of this game on the current user's device using 
- * Greystripe downloading tracking.
+ * Track the download of this game on the current user's device using
+ * Conversant downloading tracking.
  */
 + (void)trackWithAppID:(NSString *)a_appID;
 
