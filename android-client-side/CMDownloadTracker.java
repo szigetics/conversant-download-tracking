@@ -1,4 +1,4 @@
-package com.greystripe.android.gelato;
+package com.conversantmedia.android; // change to your app's package name
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -16,17 +16,17 @@ import android.content.SharedPreferences;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
-public final class GSDownloadTracker {
+public final class CMDownloadTracker {
 
     /**
-     * Track the download of your application for Greystripe conversion tracking
+     * Track the download of your application for Conversant conversion tracking
      * using a SHA-1 of the device's ANDROID_ID.
      *
      * If you choose this method, the ad the user clicked through must have been
      * trafficked to the new SDK only.
      *
      * @param context Your application's context
-     * @param appId Your Greystripe download tracking id
+     * @param appId Your Conversant download tracking id
      */
     public static void trackDownload(Context context, String appId) {
         trackDownloadWithAndroidId(context, appId);
@@ -60,7 +60,7 @@ public final class GSDownloadTracker {
                 edit.commit();
             }
         } catch (Exception ex) {
-            Log.w("Greystripe", "download tracking failed: " + ex);
+            Log.w("Conversant", "download tracking failed: " + ex);
         }
     }
 
@@ -89,7 +89,7 @@ public final class GSDownloadTracker {
             id = String.format("%0" + (bytes.length << 1) + "x", biggie);
 
         } catch (NoSuchAlgorithmException e) {
-            Log.w("Greystripe", "Unable to generate device digest...");
+            Log.w("Conversant", "Unable to generate device digest...");
         }
 
         return id;
