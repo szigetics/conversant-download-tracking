@@ -72,6 +72,10 @@
     // Before going any further...
     if(errorFlag != NULL)
     {
+        if (msgBuffer)
+        {
+            free(msgBuffer);
+        }
         return errorFlag;
     }
     
