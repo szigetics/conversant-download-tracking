@@ -58,7 +58,7 @@
         else
         {
             // Alloc memory based on above call
-            if((msgBuffer = malloc(length)) == NULL)
+            if((msgBuffer = (char *)malloc(length)) == NULL)
                 errorFlag = @"buffer allocation failure";
             else
             {
